@@ -75,20 +75,6 @@ if [ "$1" = 'fio' ]; then
         echo
         echo
 
-        echo Testing Read Sequential Speed...
-        READ_SEQ=$(fio --randrepeat=0 --verify=0 --ioengine=$IO_ENGINE --direct=$FIO_DIRECT --gtod_reduce=1 --name=read_seq --filename=$BENCH_MOUNTPOINT/fiotest --bs=1M --iodepth=16 --size=$FIO_SIZE --readwrite=read --time_based --ramp_time=2s --runtime=15s --thread --numjobs=4 --offset_increment=$FIO_OFFSET_INCREMENT)
-        echo "$READ_SEQ"
-        READ_SEQ_VAL=$(echo "$READ_SEQ"|grep -E 'READ:'|grep -Eoi '(aggrb|bw)=[[:space:]0-9GMKiBs/.]+'|cut -d'=' -f2)
-        echo
-        echo
-
-        echo Testing Write Sequential Speed...
-        WRITE_SEQ=$(fio --randrepeat=0 --verify=0 --ioengine=$IO_ENGINE --direct=$FIO_DIRECT --gtod_reduce=1 --name=write_seq --filename=$BENCH_MOUNTPOINT/fiotest --bs=1M --iodepth=16 --size=$FIO_SIZE --readwrite=write --time_based --ramp_time=2s --runtime=15s --thread --numjobs=4 --offset_increment=$FIO_OFFSET_INCREMENT)
-        echo "$WRITE_SEQ"
-        WRITE_SEQ_VAL=$(echo "$WRITE_SEQ"|grep -E 'WRITE:'|grep -Eoi '(aggrb|bw)=[[:space:]0-9GMKiBs/.]+'|cut -d'=' -f2)
-        echo
-        echo
-
         echo Testing Read/Write Mixed...
         RW_MIX=$(fio --randrepeat=0 --verify=0 --ioengine=$IO_ENGINE --direct=$FIO_DIRECT --gtod_reduce=1 --name=rw_mix --filename=$BENCH_MOUNTPOINT/fiotest --bs=4k --iodepth=64 --size=$FIO_SIZE --readwrite=randrw --rwmixread=75 --time_based --ramp_time=2s --runtime=15s)
         echo "$RW_MIX"
@@ -103,10 +89,10 @@ if [ "$1" = 'fio' ]; then
     echo ==================
     echo = Dbench Summary =
     echo ==================
-    echo "Random Read/Write IOPS: $READ_IOPS_VAL/$WRITE_IOPS_VAL. BW: $READ_BW_VAL / $WRITE_BW_VAL"
+    echo "Random Read/Write IOPS: $READ_IOPS_VAL/$WRITE_IOPS_VAL"
+    echo "Sequential Read/Write BW: $READ_BW_VAL / $WRITE_BW_VAL"
     if [ -z $QUICK_BENCH ] || [ "$QUICK_BENCH" == "no" ]; then
         echo "Average Latency Read/Write: $READ_LATENCY_VAL/$WRITE_LATENCY_VAL"
-        echo "Sequential Read/Write: $READ_SEQ_VAL / $WRITE_SEQ_VAL"
         echo "Mixed Random Read/Write IOPS: $RW_MIX_R_IOPS/$RW_MIX_W_IOPS"
     fi
 
